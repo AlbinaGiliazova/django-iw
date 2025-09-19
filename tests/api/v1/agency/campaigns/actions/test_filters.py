@@ -70,7 +70,7 @@ def test_created_filters_combined(as_anon):
             Campaign.objects.create(name='first')
         with freeze_time(base_date + timedelta(days=1)):
             Campaign.objects.create(name='second')
-    with freeze_time(base_date + timedelta(days=2)):
+        with freeze_time(base_date + timedelta(days=2)):
             Campaign.objects.create(name='third')
     else:
         Campaign.objects.create(name='first', created_at=base_date)
