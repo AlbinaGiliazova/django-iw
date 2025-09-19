@@ -9,7 +9,7 @@ except ImportError:
     freeze_time = None
 
 @pytest.mark.django_db
-def test_created_before_after_filters(client):
+def test_created_before_after_filters(as_anon):
     base_date = datetime(2023, 1, 1, 12, 0, 0)
 
     # Создаем 3 кампании с разными датами
@@ -31,10 +31,10 @@ def test_created_before_after_filters(client):
             name='third', created_at=base_date + timedelta(days=2)
         )
 
-    url = reverse('campaign-list')  # Замени на свой actual route
+    url = reverse('campaign-list')
 
     # created_before=2023-01-02T12:00:00  включает кампании с датой <= указанной
-    response = client.get(
+    response = as_anon.get(
         url,
         {'created_before': '2023-01-02T12:00:00'}
     )
@@ -43,7 +43,7 @@ def test_created_before_after_filters(client):
     assert names == {'first', 'second'}
 
     # created_after=2023-01-01T12:00:00 включает кампании c датой >= указанной
-    response = client.get(
+    response = as_anon.get(
         url,
         {'created_after': '2023-01-01T12:00:00'}
     )
@@ -52,7 +52,7 @@ def test_created_before_after_filters(client):
     assert names == {'first', 'second', 'third'}
 
     # created_after=2023-01-02T12:00:00  включает second+third
-    response = client.get(
+    response = as_anon.get(
         url,
         {'created_after': '2023-01-02T12:00:00'}
     )
@@ -62,7 +62,7 @@ def test_created_before_after_filters(client):
 
 # Тест на комбинацию фильтров
 @pytest.mark.django_db
-def test_created_filters_combined(client):
+def test_created_filters_combined(as_anon):
     base_date = datetime(2023, 1, 1, 12, 0, 0)
 
     if freeze_time:
@@ -83,7 +83,7 @@ def test_created_filters_combined(client):
         'created_after': '2023-01-01T12:00:00',
         'created_before': '2023-01-02T12:00:00',
     }
-    response = client.get(url, query)
+    response = as_anon.get(url, query)
     assert response.status_code == 200
     names = {c['name'] for c in response.json()}
     assert names == {'first', 'second'}      
