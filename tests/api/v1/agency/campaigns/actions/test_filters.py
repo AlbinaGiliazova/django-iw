@@ -10,7 +10,7 @@ from models.models import Campaign
 
 
 @pytest.fixture
-def campaigns(db):
+def campaigns(db):  # noqa: ARG001
     base_date = datetime(2023, 1, 1, 10, 0, 0, tzinfo=pytz.UTC)
     with freeze_time(base_date):
         camp1 = Campaign.objects.create(name="first")
@@ -19,10 +19,10 @@ def campaigns(db):
     with freeze_time(base_date + timedelta(days=2)):
         camp3 = Campaign.objects.create(name="third")
     return camp1, camp2, camp3
-    
+
 
 @pytest.mark.django_db
-def test_created_before_after_filters(as_anon, campaigns):
+def test_created_before_after_filters(as_anon, campaigns):  # noqa: ARG001
     url = reverse("campaign-list")
 
     response = as_anon.get(url, {"created_before": "2023-01-02"})
@@ -41,7 +41,7 @@ def test_created_before_after_filters(as_anon, campaigns):
 
 # Тест на комбинацию фильтров
 @pytest.mark.django_db
-def test_created_filters_combined(as_anon, campaigns):
+def test_created_filters_combined(as_anon, campaigns):  # noqa: ARG001
     url = reverse("campaign-list")
 
     query = {
