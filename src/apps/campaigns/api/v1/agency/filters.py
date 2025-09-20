@@ -29,7 +29,7 @@ class CampaignFilter(django_filters.FilterSet):
             dt = timezone.make_aware(dt, pytz.utc)
         return queryset.filter(created_at__lte=dt)
 
-     def filter_search(self, queryset, _, value):  # noqa: PLR6301
+    def filter_search(self, queryset, _, value):  # noqa: PLR6301
         return queryset.search_by_campaign_or_strategy_name(value)
 
     class Meta:

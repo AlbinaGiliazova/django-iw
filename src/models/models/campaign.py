@@ -8,15 +8,12 @@ class CampaignQuerySet(models.QuerySet):
         value = value.strip()
         if not value:
             return self.none()
-        # "strategies__name" — default_related_name=’strategies’ в модели Strategy
-        return self.filter(
-            Q(name__icontains=value) | Q(strategies__name__icontains=value)
-        ).distinct()
-        
+        return self.filter(Q(name__icontains=value) | Q(strategies__name__icontains=value)).distinct()
+
 
 class Campaign(TimestampedModel):
     objects = CampaignQuerySet.as_manager()
-    
+
     name = models.CharField(max_length=1024)
 
     class Meta:
