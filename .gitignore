@@ -1,7 +1,7 @@
-__pycache__
 .env
-.python-version
-.venv
 livecoding
+__pycache__
+.python-version
 staticfiles
+.venv
 venv
