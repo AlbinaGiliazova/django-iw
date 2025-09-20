@@ -4,8 +4,8 @@ import pytest
 import pytz
 from django.urls import reverse
 
-from models.models import Campaign
 from apps.campaigns.api.v1.agency.filters import CampaignFilter
+from models.models import Campaign
 
 try:
     from freezegun import freeze_time
@@ -74,62 +74,62 @@ def test_created_filters_combined(as_anon):
 
 
 @pytest.fixture
-def campaigns(db):
-    camp1 = Campaign.objects.create(name='Campaign 1')
-    camp2 = Campaign.objects.create(name='Campaign 2')
-    camp3 = Campaign.objects.create(name='Campaign 3')
+def campaigns(db):  # noqa: ARG001
+    camp1 = Campaign.objects.create(name="Campaign 1")
+    camp2 = Campaign.objects.create(name="Campaign 2")
+    camp3 = Campaign.objects.create(name="Campaign 3")
     return camp1, camp2, camp3
 
+
+@pytest.mark.django_db
 def test_ids_filter_single(campaigns):
     camp1, _, _ = campaigns
-    data = {'ids': f'{camp1.id}'}
+    data = {"ids": f"{camp1.id}"}
     queryset = Campaign.objects.all()
     filtered = CampaignFilter(data=data, queryset=queryset)
-    result_ids = list(filtered.qs.values_list('id', flat=True))
+    result_ids = list(filtered.qs.values_list("id", flat=True))
     assert result_ids == [camp1.id]
 
+
+@pytest.mark.django_db
 def test_ids_filter_multiple(campaigns):
     camp1, _, camp3 = campaigns
-    data = {'ids': f'{camp1.id},{camp3.id}'}
+    data = {"ids": f"{camp1.id},{camp3.id}"}
     queryset = Campaign.objects.all()
     filtered = CampaignFilter(data=data, queryset=queryset)
-    result_ids = sorted(filtered.qs.values_list('id', flat=True))
+    result_ids = sorted(filtered.qs.values_list("id", flat=True))
     assert result_ids == sorted([camp1.id, camp3.id])
 
+
+@pytest.mark.django_db
 def test_ids_filter_no_match():
-    data = {'ids': '999999'}
+    data = {"ids": "999999"}
     queryset = Campaign.objects.all()
     filtered = CampaignFilter(data=data, queryset=queryset)
     assert list(filtered.qs) == []
 
 
-@pytest.fixture
-def campaigns(db):
-    camp1 = Campaign.objects.create(name='Campaign 1')
-    camp2 = Campaign.objects.create(name='Campaign 2')
-    camp3 = Campaign.objects.create(name='Campaign 3')
-    return camp1, camp2, camp3
-
 @pytest.mark.django_db
 def test_filter_by_ids_single(as_anon, campaigns):
     camp1, _, _ = campaigns
-    url = reverse('campaign-list')
-    response = as_anon.get(url, {'ids': str(camp1.id)})
-    returned_ids = {c['id'] for c in response['results']}
+    url = reverse("campaign-list")
+    response = as_anon.get(url, {"ids": str(camp1.id)})
+    returned_ids = {c["id"] for c in response["results"]}
     assert returned_ids == {camp1.id}
+
 
 @pytest.mark.django_db
 def test_filter_by_ids_multiple(as_anon, campaigns):
     camp1, _, camp3 = campaigns
-    url = reverse('campaign-list')
+    url = reverse("campaign-list")
     ids = f"{camp1.id},{camp3.id}"
-    response = as_anon.get(url, {'ids': ids})
-    returned_ids = {c['id'] for c in response['results']}
+    response = as_anon.get(url, {"ids": ids})
+    returned_ids = {c["id"] for c in response["results"]}
     assert returned_ids == {camp1.id, camp3.id}
+
 
 @pytest.mark.django_db
 def test_filter_by_ids_no_match(as_anon):
-    url = reverse('campaign-list')
-    response = as_anon.get(url, {'ids': '999999'})
-    assert len(response['results']) == 0
-        
+    url = reverse("campaign-list")
+    response = as_anon.get(url, {"ids": "999999"})
+    assert len(response["results"]) == 0
